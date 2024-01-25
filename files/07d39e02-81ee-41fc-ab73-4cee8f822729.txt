@@ -1,0 +1,1169 @@
+profiles.html || recent now
+
+<div id="whole-content" style="display: none;">
+{% extends 'main/index.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Resident Profiles</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{%url 'forms' %}"><strong>Add Residents</strong></a></li>
+                        <li class="breadcrumb-item active">Records</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by name or address">
+        </div>
+    </div>
+
+    <div class="row h-100">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-striped display" style="width:100%" id="userList">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Address</th>    
+                                <th style="width: 20%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="residentTableBody">
+                                <!--  Pagination Body called in JS (line 892)-->
+                        </tbody>
+                    </table>
+                               <!-- Pagination buttons -->
+                <div class="d-flex justify-content-center">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous" onclick="loadPreviousPage()">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <!-- You can dynamically generate page buttons here -->
+                            <!-- For example, if you have 5 pages, you can create 5 buttons -->
+                            <li class="page-item"><a class="page-link pagination-link" href="#" data-page="1">1</a></li>
+                            <li class="page-item"><a class="page-link pagination-link" href="#" data-page="2">2</a></li>
+                            <li class="page-item"><a class="page-link pagination-link" href="#" data-page="3">3</a></li>
+                            <!-- Add more buttons as needed -->
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next" onclick="loadNextPage()">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                </div> <!-- end card-body-->
+            </div>
+        </div> <!-- end col-->
+    </div> <!-- end row-->
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Resident's Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:void(0);">
+                        <div class="row g-4">
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="firstname" class="form-label1">First Name <span>*</span></label>
+                                        <input type="form" class="form-control" id="first_name" placeholder="First Name">
+                                    </div>
+                                </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="labelInput" class="form-label1">Middle Name</label>
+                                        <input type="form" class="form-control" id="middle_name" placeholder="Middle Name" >
+                                    </div>
+                                </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk"> 
+                                        <label for="lastname" class="form-label1">Last Name <span></span></label>
+                                        <input type="form" class="form-control" id="last_name" placeholder="Last Name" >
+                                    </div>
+                                </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                   <div class="asterisk">
+                                            <label for="Suffix" class="form-label1">Suffix</label>
+                                            <div class="input-group">
+                                                <select class="form-select" id="suffix">
+                                                    <option value="" selected>Select a suffix</option>
+                                                    <option value="Sr.">Sr.</option>
+                                                    <option value="Jr.">Jr.</option>
+                                                    <option value="I">I</option>
+                                                    <option value="II">II</option>
+                                                    <option value="III">III</option>
+                                                </select>
+                                            </div>
+                                            </div>
+                                        </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="age" class="form-label1">Age <span></span></label>
+                                        <input type="text" class="form-control" id="age" value="" placeholder="Age" >
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="exampleInputdate" class="form-label1">Birthday <span></span></label>
+                                        <input type="date" class="form-control" id="birthday" >
+                                    </div>
+                                </div>
+                                 <!-- Birth order -->
+                                 <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="birth_order" class="form-label1">Birth Order <span></span></label>
+                                    <select class="form-select" id="birth_order">
+                                        <option value=""  selected>Select birth order</option>
+                                        <option value="Firstborn">First born</option>
+                                        <option value="Secondborn">Second born</option>
+                                        <option value="Middle Child">Middle Child</option>
+                                        <option value="Youngest Child">Youngest Child</option>
+                                        <option value="Only Child">Only Child</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="Birthplace" class="form-label1">Birthplace <span></span></label>
+                                        <input type="date" class="form-control" id="birthplace" placeholder="Birthplace">
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="blood_type" class="form-label1">Blood Type <span></span></label>
+                                        <input type="text" class="form-control" id="blood_type" placeholder="Blood type">
+                                    </div>
+                                </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="gender" class="form-label1">Gender <span></span></label>
+                                        <select class="form-select" id="gender">
+                                            <option value="" selected>Select gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--end col-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="maritalStatus" class="form-label1">Civil Status <span></span></label>
+                                    <select class="form-select" id="civil_status" onchange="showAdditionalFields()">
+                                        <option value="" selected>Select marital status</option>
+                                        <option value="single">Single</option>
+                                        <option value="married">Married</option>
+                                        <option value="widowed">Widowed</option>
+                                    </select>
+                                </div>
+                                </div>
+                                <!-- Address -->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="house_no" class="form-label1">House No/Blk <span></span></label>
+                                        <input type="text" class="form-control" id="house_no" placeholder="House No/Blk">
+                                    </div>
+                                </div>
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="street" class="form-label1">Street<span></span></label>
+                                        <input type="text" class="form-control" id="street" placeholder="Street">
+                                    </div>
+                                </div>
+                                <!--Phone number-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="phone_no" class="form-label1">Phone Number <span>*</span></label>
+                                        <div class="form-icon right">
+                                            <input type="email" class="form-control form-control-icon" id="phone_no" placeholder="09*******">
+                                            <i class="ri-phone-line"></i>
+                                    </div>
+                                    </div>
+                                </div>
+                                <!--email-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                        <label for="email" class="form-label1">Email <span>*</span></label>
+                                        <div class="form-icon right">
+                                            <input type="email" class="form-control form-control-icon" id="email" placeholder="example@gmail.com">
+                                            <i class="ri-mail-unread-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Occupation-->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="occupation" class="form-label1">Occupation <span>*</span></label>
+                                    <select class="form-select" id="occupation" onchange="showAdditionalFieldsOccupation()">
+                                        <option value="" selected>Select Occupation</option>
+                                        <option value="employed">Employed</option>
+                                        <option value="student">Student</option>
+                                        <option value="unemployed">Unemployed</option>
+                                        <option value="unemployed">Retired</option>
+                                    </select>
+                                    </div>
+                                </div>
+                               <!-- employed-->
+                                <div id="additionalFieldsEmployed" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                            <label for="educationalattainment" class="form-label1">Educational Attainment <span>*</span></label>
+                                            <input type="text" id="educational_attainment" class="form-control">
+                                        </div>
+
+                                        <div class="col-xxl-3 col-md-6">
+                                            <label for="school" class="form-label1">School</label>
+                                            <input type="text" class="form-control" id="emp_school" placeholder="School">
+                                        </div>
+
+                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                            <label for="Place of school" class="form-label1">Place of School</label>
+                                            <input type="text" id="emp_place_of_school" class="form-control">
+                                        </div>
+
+                                        <div class="col-xxl-3 col-md-6 ">
+                                            <label for="Degree" class="form-label1">Degree</label>
+                                            <input type="text" id="emp_degree" class="form-control">
+                                        </div>
+                                        <div class="col-xxl-3 col-md-6 ">
+                                            <label for="Company" class="form-label1">Company</label>
+                                            <input type="text" id="company" class="form-control">
+                                        </div>
+                                        <div class="col-xxl-3 col-md-6 ">
+                                            <label for="position" class="form-label1">Position</label>
+                                            <input type="text" id="position" class="form-control" >
+                                        </div>
+                                        <div class="col-xxl-3 col-md-6 ">
+                                            <label for="salary" class="form-label1">Salary (Monthly Income)</label>
+                                            <input type="text" id="salary" class="form-control" >
+                                        </div>
+                                        <div class="col-xxl-3 col-md-6 ">
+                                            <label for="Years_Income" class="form-label1">Years employed</label>
+                                            <input type="text" id="years_employed" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- student -->
+                                <div id="additionalFieldsStudent" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                            <label for="grade_level" class="form-label1">Education Level</label>
+                                            <select class="form-select" id="grade_level"  onchange="toggleFields()">
+                                                <option value="" disabled selected>Select Education Level</option>
+                                                <option value="elementary">Elementary</option>
+                                                <option value="highSchool">High School</option>
+                                                <option value="seniorHighSchool">Senior High School</option>
+                                                <option value="college">College</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                     <!-- student element choice -->
+                                     <div id="elementaryFields" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                                <label for="elementary" class="form-label1">Grade Level</label>
+                                                <input type="text" id="elementary" class="form-control"  placeholder="Grade Level">
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <div id="highSchoolFields" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                                <label for="highSchool" class="form-label1">Grade Level</label>
+                                                <input type="text" id="highSchool" class="form-control"  placeholder="Grade Level">
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <div id="seniorHighSchoolFields" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                                <label for="seniorHighSchool" class="form-label1">Strand</label>
+                                                <select class="form-select" id="strand">
+                                                    <option value=""  selected>Select Strand</option>
+                                                    <option value="HUMSS">HUMSS</option>
+                                                    <option value="ABM">ABM</option>
+                                                    <option value="Gas">GAS</option>
+                                                    <option value="Stem">Stem</option>
+                                                    <option value="TVL">TVL</option>
+                                                    <option value="ICT">ICT</option>
+                                                    <option value="Arts">Arts & Design</option>
+                                                </select>
+                                        </div>
+                                     </div>
+                                     </div>
+                                     <div id="CollegeFields" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                                <label for="collegeYear" class="form-label1">Year Level</label>
+                                                <input type="text" id="collegeYear" class="form-control" placeholder="Grade Level">
+                                            </div>
+                                            <div class="col-xxl-3 col-md-6 ">
+                                                <label for="collegeCourse" class="form-label">Course</label>
+                                                <input type="text" id="collegeCourse" class="form-control" placeholder="Course">
+                                            </div>
+                                            <div class="col-xxl-3 col-md-6 ">
+                                                <label for="collegeSchool" class="form-label1">School</label>
+                                                <input type="text" id="collegeSchool" class="form-control" placeholder="School">
+                                            </div>
+                                        </div>
+                                     </div>
+                                <!-- indigenous -->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="indigenous" class="form-label1">Is Indigenous? <span>*</span></label>
+                                    <select class="form-select" id="is_indigenous" onchange="Ethnicityfunction()">
+                                        <option value="" selected>Select Yes or No</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div id="indigenousYes" style="display: none;">
+                                    <div class="row ">
+                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                            <label for="indigenous_yes" class="form-label1">What type?</label>
+                                            <input type="text" id="indigenous_type" class="form-control" placeholder="Type of Ethnicity">
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <!-- disability -->
+                                 <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="disability" class="form-label1">Is Disability? <span>*</span></label>
+                                    <select class="form-select" id="is_disability" onchange="Disabilityfunction()">
+                                        <option value=""  selected>Select Yes or No</option>
+                                        <option value="disability_Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div id="disabilityYes" style="display: none;">
+                                    <div class="row ">
+                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                            <label for="Disability_ID" class="form-label1">Disability ID</label>
+                                            <input class="form-control" type="file" id="Disability_ID" >
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <!-- Voter -->
+                                <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="voter" class="form-label1">Is Registered Voter? <span>*</span></label>
+                                    <select class="form-select" id="voter" onchange="RegisteredVoter()">
+                                        <option value="" selected>Select Yes or No</option>
+                                        <option value="Yes_registered">Yes</option>
+                                        <option value="No_registered">No</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div id="RegisteredYes" style="display: none;">
+                                    <div class="row ">
+                                        <div class="col-xxl-3 col-md-6">
+                                            <div class="asterisk">
+                                            <label for="voting_precint" class="form-label1">Voting Precint <span>*</span></label>
+                                            <input type="text" id="precint_no" class="form-control" placeholder="Voting Precint">
+                                        </div>
+                                        </div>
+                                    </div>
+                                 </div>
+                                 <!-- Multiple Files Input Example -->
+                                 <div class="col-xxl-3 col-md-6">
+                                    <div class="asterisk">
+                                    <label for="formFileMultiple" class="form-label1">Valid ID <span>*</span></label>
+                                    <input class="form-control" type="file" id="formFileMultiple" multiple>
+                                     </div>
+                                </div>    
+                        </div>
+                            <!-- family bg -->
+                                        <div class="col-lg-12">
+                                            <div class="card">
+                                                <div class="card-header align-items-center d-flex justify-content-between">
+                                                    <h4 class="mb-sm-0">Mother's Information</h4>
+                                                </div>
+                                        <!-- end card header -->
+                                                <div class="card-body">
+                                                    <div class="live-preview">
+                                                        <div class="row gy-4">
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                    <label for="m_first_name" class="form-label1"> Mother's First Name <span></span></label>
+                                                                    <input type="form" class="form-control" id="m_first_name" placeholder="First Name">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                    <label for="m_middle_name" class="form-label1"> Middle Name </label>
+                                                                    <input type="form" class="form-control" id="m_middle_name" placeholder="Middle Name">
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                <label for="lastname" class="form-label1"> Last Name <span></span></label>
+                                                                <input type="form" class="form-control" id="m_last_name" placeholder="Last Name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xxl-3 col-md-6">
+                                                            <label for="Suffix" class="form-label1">Suffix</label>
+                                                            <div class="input-group">
+                                                                <select class="form-select" id="m_suffix" >
+                                                                    <option value="" selected>Select a suffix</option>
+                                                                    <option value="Sr.">Sr.</option>
+                                                                    <option value="Jr.">Jr.</option>
+                                                                    <option value="I">I</option>
+                                                                    <option value="II">II</option>
+                                                                    <option value="III">III</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xxl-3 col-md-6">
+                                                            <div class="asterisk">
+                                                                <label for="Address" class="form-label1">House No/Blk <span></span></label>
+                                                                <input type="text" class="form-control" id="m_blk" placeholder="House No/Blk" >
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xxl-3 col-md-6">
+                                                            <div class="asterisk">
+                                                                <label for="Address" class="form-label1">Street<span></span></label>
+                                                                <input type="text" class="form-control" id="m_street" placeholder="Street" >
+                                                            </div>
+                                                        </div>
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                            <label for="exampleInputdate" class="form-label1">Birthday <span></span></label>
+                                                            <input type="date" class="form-control" id="m_birthday" >
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                            <label for="gender" class="form-label1">Gender <span></span></label>
+                                                            <select class="form-select" id="m_gender" >
+                                                                <option value=""  selected>Select gender</option>
+                                                                <option value="male">Male</option>
+                                                                <option value="female">Female</option>
+                                                                <option value="other">Other</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                            <label for="phonenum" class="form-label1">Phone Number <span></span></label>
+                                                            <div class="form-icon right">
+                                                                <input type="phone" class="form-control form-control-icon" id="m_phone_no" placeholder="09*******" >
+                                                                <i class="ri-phone-line"></i>
+                                                            </div>
+                                                         </div>
+                                                        </div>
+                                                        <div class="col-xxl-3 col-md-6">
+                                                            <div class="asterisk">
+                                                                <label for="email" class="form-label1">Email <span></span></label>
+                                                                <div class="form-icon right">
+                                                                    <input type="email" class="form-control form-control-icon" id="m_email" placeholder="example@gmail.com" >
+                                                                    <i class="ri-mail-unread-line"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>     
+                                                </div>
+                                                </div>
+                                          </div>
+                                         </div>
+                                         </div>
+
+                                <!-- Father's Information -->
+                                <div class="col-lg-12">
+                                    <div class="card">
+                                        <div class="card-header align-items-center d-flex justify-content-between">
+                                            <h4 class="mb-sm-0">Father's Information</h4>
+                                        </div>
+                                <!-- end card header -->
+                                        <div class="card-body">
+                                            <div class="live-preview">
+                                                <div class="row gy-4">
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                            <label for="firstname" class="form-label1"> Father's First Name <span>*</span></label>
+                                                            <input type="form" class="form-control" id="f_first_name" placeholder="First Name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                            <label for="middlename" class="form-label1"> Middle Name </label>
+                                                            <input type="form" class="form-control" id="f_middle_name" placeholder="Middle Name">
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-xxl-3 col-md-6">
+                                                        <div class="asterisk">
+                                                        <label for="lastname" class="form-label1"> Last Name <span></span></label>
+                                                        <input type="form" class="form-control" id="f_last_name" placeholder="Last Name">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <label for="Suffix" class="form-label1">Suffix</label>
+                                                    <div class="input-group">
+                                                        <select class="form-select" id="f_suffix" >
+                                                            <option value="" selected>Select a suffix</option>
+                                                            <option value="Sr.">Sr.</option>
+                                                            <option value="Jr.">Jr.</option>
+                                                            <option value="I">I</option>
+                                                            <option value="II">II</option>
+                                                            <option value="III">III</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="Address" class="form-label1">House No/Blk <span></span></label>
+                                                        <input type="text" class="form-control" id="f_blk" placeholder="House No/Blk" >
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="Address" class="form-label1">Street<span></span></label>
+                                                        <input type="text" class="form-control" id="f_street" placeholder="Street" >
+                                                    </div>
+                                                </div>
+                                            <div class="col-xxl-3 col-md-6">
+                                                <div class="asterisk">
+                                                    <label for="exampleInputdate" class="form-label1">Birthday <span></span></label>
+                                                    <input type="date" class="form-control" id="f_birthday" >
+                                                </div>
+                                            </div>
+                                            <div class="col-xxl-3 col-md-6">
+                                                <div class="asterisk">
+                                                    <label for="gender" class="form-label1">Gender <span></span></label>
+                                                    <select class="form-select" id="f_gender">
+                                                        <option value="" selected>Select gender</option>
+                                                        <option value="male">Male</option>
+                                                        <option value="female">Female</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xxl-3 col-md-6">
+                                                <div class="asterisk">
+                                                    <label for="phonenum" class="form-label1">Phone Number <span></span></label>
+                                                    <div class="form-icon right">
+                                                        <input type="phone" class="form-control form-control-icon" id="f_phone_no" placeholder="09*******" >
+                                                        <i class="ri-phone-line"></i>
+                                                    </div>
+                                                 </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="email" class="form-label1">Email <span></span></label>
+                                                        <div class="form-icon right">
+                                                            <input type="email" class="form-control form-control-icon" id="f_email" placeholder="example@gmail.com">
+                                                            <i class="ri-mail-unread-line"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                
+                                        </div>
+                                        </div>
+                                </div>
+                                </div>
+                                </div>
+                            <div class="col-lg-12">
+                                <div class="hstack gap-2 justify-content-end">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div><!--end col-->
+                        </div><!--end row-->
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal edit -->
+                            <!--Modals for view-->             
+                    <!--View Modal-->                     
+                    <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-modal="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="viewModalLabel">Resident's Information</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="javascript:void(0);">
+                                        <div class="row g-4">
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="Name" class="form-label1">Name</label>
+                                                        <span id="viewModalName"></span>                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="age" class="form-label1">Age</label>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="exampleInputdate" class="form-label1">Birthday</label>
+
+                                                    </div>
+                                                </div>
+                                                 <!-- Birth order -->
+                                                 <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="birth_order" class="form-label1">Birth Order</label>
+                                                    
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="Birthplace" class="form-label1">Birthplace</label>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="blood_type" class="form-label1">Blood Type </label>
+
+                                                    </div>
+                                                </div>
+                                                <!--end col-->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="gender" class="form-label1">Gender</label>
+                                                      
+                                                    </div>
+                                                </div>
+                                                <!--end col-->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="maritalStatus" class="form-label1">Civil Status</label>
+                                                    
+                                                </div>
+                                                </div>
+                                                <!-- Address -->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="house_no" class="form-label1">Address </label>
+
+                                                    </div>
+                                                </div>
+                                                
+                                                <!--Phone number-->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="phone_no" class="form-label1">Phone Number</label>
+                                                        <div class="form-icon right">
+                                                           
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <!--email-->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                        <label for="email" class="form-label1">Email </label>
+                                                        <div class="form-icon right">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Occupation-->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="occupation" class="form-label1">Occupation</label>
+                                                   
+                                                    </div>
+                                                </div>
+                                               <!-- employed-->
+                                                <div id="additionalFieldsEmployed" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-xxl-3 col-md-6 offset-md-3 offset-xxl-3">
+                                                            <label for="educationalattainment" class="form-label1">Educational Attainment </label>
+                       
+                                                        </div>
+    
+                                                     </div>
+                                                     </div>
+                                                <!-- indigenous -->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="indigenous" class="form-label1">Is Indigenous?</label>
+                                                   
+                                                    </div>
+                                                </div>
+                                                 <!-- disability -->
+                                                 <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="disability" class="form-label1">Is Disability?</label>
+                                                  
+                                                    </div>
+                                                </div>
+                                             
+                                                 <!-- Voter -->
+                                                <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="voter" class="form-label1">Is Registered Voter?</label>
+                                                    
+                                                    </div>
+                                                </div>
+                                                <div id="RegisteredYes" style="display: none;">
+                                                    <div class="row ">
+                                                        <div class="col-xxl-3 col-md-6">
+                                                            <div class="asterisk">
+                                                            <label for="voting_precint" class="form-label1">Voting Precint</label>
+                                                           
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                 </div>
+                                                 <!-- Multiple Files Input Example -->
+                                                 <div class="col-xxl-3 col-md-6">
+                                                    <div class="asterisk">
+                                                    <label for="formFileMultiple" class="form-label1">Valid ID </label>
+
+                                                     </div>
+                                                </div>
+    
+                                        
+                                        </div>
+                                            <!-- family bg -->
+                                                        <div class="col-lg-12">
+                                                            <div class="card">
+                                                                <div class="card-header align-items-center d-flex justify-content-between">
+                                                                    <h4 class="mb-sm-0">Mother's Information</h4>
+                                                                </div>
+                                                        <!-- end card header -->
+                                                                <div class="card-body">
+                                                                    <div class="live-preview">
+                                                                        <div class="row gy-4">
+                                                                            <div class="col-xxl-3 col-md-6">
+                                                                                <div class="asterisk">
+                                                                                    <label for="m_first_name" class="form-label1"> Mother's Name </label>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-xxl-3 col-md-6">
+                                                                            <div class="asterisk">
+                                                                                <label for="Address" class="form-label1">Address</label>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    <div class="col-xxl-3 col-md-6">
+                                                                        <div class="asterisk">
+                                                                            <label for="exampleInputdate" class="form-label1">Birthday</label>
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-xxl-3 col-md-6">
+                                                                        <div class="asterisk">
+                                                                            <label for="gender" class="form-label1">Gender</label>
+                                                                            
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-xxl-3 col-md-6">
+                                                                        <div class="asterisk">
+                                                                            <label for="phonenum" class="form-label1">Phone Number </label>
+                                                                            <div class="form-icon right">
+                                                                                
+                                                                            </div>
+                                                                         </div>
+                                                                        </div>
+                                                                        <div class="col-xxl-3 col-md-6">
+                                                                            <div class="asterisk">
+                                                                                <label for="email" class="form-label1">Email </label>
+                                                                                <div class="form-icon right">
+                                                                                   
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    
+                                                                        
+                                                                </div>
+                                                                </div>
+                                                          </div>
+                                                         </div>
+                                                         </div>
+    
+                                                <!-- Father's Information -->
+                                                <div class="col-lg-12">
+                                                    <div class="card">
+                                                        <div class="card-header align-items-center d-flex justify-content-between">
+                                                            <h4 class="mb-sm-0">Father's Information</h4>
+                                                        </div>
+                                                <!-- end card header -->
+                                                        <div class="card-body">
+                                                            <div class="live-preview">
+                                                                <div class="row gy-4">
+                                                                    <div class="col-xxl-3 col-md-6">
+                                                                        <div class="asterisk">
+                                                                            <label for="m_first_name" class="form-label1"> Mother's Name </label>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xxl-3 col-md-6">
+                                                                    <div class="asterisk">
+                                                                        <label for="Address" class="form-label1">Address</label>
+
+                                                                    </div>
+                                                                </div>
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                    <label for="exampleInputdate" class="form-label1">Birthday</label>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                    <label for="gender" class="form-label1">Gender</label>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xxl-3 col-md-6">
+                                                                <div class="asterisk">
+                                                                    <label for="phonenum" class="form-label1">Phone Number </label>
+                                                                    <div class="form-icon right">
+                                                                        
+                                                                    </div>
+                                                                 </div>
+                                                                </div>
+                                                                <div class="col-xxl-3 col-md-6">
+                                                                    <div class="asterisk">
+                                                                        <label for="email" class="form-label1">Email </label>
+                                                                        <div class="form-icon right">
+                                                                           
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            
+                                                                
+                                                        </div>
+                                                        </div>
+                                                  </div>
+                                                 </div>
+                                                 </div>
+                                        </div><!--end row-->
+                                </div>   <!-- end of modal view -->
+                            </div>
+                        </div> <!--div protection-->
+                            {% endblock %}
+<!-- container-fluid -->
+
+{% block css %}
+<link href="{% static 'css/profiles.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+<!-- Pagination -->
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" ></script>
+<script>
+    $(document).ready(function () {
+        // Function to load resident data with pagination and search
+        function loadResidents(page = 1, searchTerm = "") {
+            $.ajax({
+                url: "http://127.0.0.1:8000/residentprofiles/getp?page=" + page + "&limit=10&search=" + encodeURIComponent(searchTerm),
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+                success: function (data) {
+                    // Clear existing data
+                    $("#residentTableBody").empty();
+
+                    // Check if residents data is available
+                    if (data.data.length > 0) {
+                        // Iterate through residents and append rows to the table
+                        $.each(data.data, function (index, resident) {
+                            var row = '<tr>' +
+                                '<td>' + resident.first_name + ' ' + resident.middle_name + ' ' + resident.last_name + '</td>' +
+                                '<td>' + resident.house_no + ' ' + resident.street + '</td>' +
+                                '<td>' +
+                                '<button class="btn btn-soft-secondary edit-btn" data-residentid="' + resident.id + '" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalgrid">' +
+                                '<a href="#" class="dropdown-item"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit</a>' +
+                                '</button>' +
+                                '<button class="btn btn-soft-success view-btn" data-residentid="' + resident.id + ' " type="button" data-bs-toggle="modal" aria-expanded="false" data-bs-target="#viewModal">' +
+                                '<a href="#" class="dropdown-item"><i class="ri-eye-fill align-bottom me-2 text-muted"></i> View</a>' +
+                                '</button>' +
+                                '<button class="btn btn-soft-primary delete-btn" data-residentid="' + resident.id + '" type="button" aria-expanded="false">' +
+                                '<a href="#" class="dropdown-item" onclick="event.preventDefault();"><i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete</a>' +
+                                '</button>' +
+                                '</td>' +
+                                '</tr>';
+
+                            // Append the row to the table body
+                            $("#residentTableBody").append(row);
+                        });
+                    } else {
+                        // Handle case when no residents are found
+                        $("#residentTableBody").html('<tr><td colspan="5">No residents found</td></tr>');
+                    }
+                },
+                error: function () {
+                    // Handle error case
+                    console.error('Error fetching residents data.');
+                }
+            });
+        }
+
+    // Search input change event handler
+    $("#searchInput").on("input", function () {
+            var searchTerm = $(this).val();
+            loadResidents(1, searchTerm);
+       });
+
+    // Initial load of residents data
+            loadResidents();
+
+    // Function to dynamically generate pagination buttons
+    function generatePaginationButtons(totalPages) {
+     var paginationContainer = $(".pagination");
+     paginationContainer.empty();
+
+    for (var i = 1; i <= totalPages; i++) {
+    var button = '<li class="page-item"><a class="page-link pagination-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+    paginationContainer.append(button);
+    }
+}
+
+    // Pagination click event handler
+        $(document).on("click", ".pagination-link", function (event) {
+            event.preventDefault();
+            var page = $(this).attr("data-page");
+            loadResidents(page);
+        });
+
+    // Variable to store the current page
+            var currentPage = 1;
+
+    // Function to load the next page
+        function loadNextPage() {
+            currentPage++;
+            loadResidents(currentPage);
+        }
+
+    // Function to load the previous page
+        function loadPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadResidents(currentPage);
+            }
+        }
+
+    // DELETE MODAL POP UP ---------------------------------------------------------------
+        $(document).on("click", ".delete-btn", function () {
+            var residentId = $(this).data("residentid");
+            // Display a confirmation prompt before proceeding with deletion
+            if (confirm("Are you sure you want to delete this resident?")) {
+                // User clicked OK in the confirmation prompt
+                // Call the function to delete the resident with the given ID
+                deleteResident(residentId);
+             }
+        });
+
+    // DELETE RESIDENT
+        function deleteResident(residentId) {
+            $.ajax({
+                 url: "http://127.0.0.1:8000/residentprofiles/" + residentId,
+                type: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+                success: function (data) {
+                    // Reload the residents after successful deletion
+                    loadResidents();
+                },
+                 error: function () {
+                    // Handle error case
+                    console.error('Error deleting resident.');
+                }
+            });
+        }
+
+    // FOR EDIT MODAL Attach a click event handler to the edit buttons--------------------------------------
+        $(document).on("click", ".edit-btn", function () {
+            var residentId = $(this).data("residentid");
+
+            // Set the resident ID to the modal data attribute
+            $('#editModal').data('resident-id', residentId);
+
+            // Call the function to get specific resident data by ID
+            getResident(residentId);
+        });
+
+
+    // Function to get specific resident data by ID
+        function getResident(residentId) {
+            console.log('Getting resident with ID:', residentId);
+            $.ajax({
+                url: "http://127.0.0.1:8000/residentprofiles/" + residentId,
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+                success: function (data) {
+                    // Populate the form fields with the resident data
+                    populateFormWithData(data.data);
+
+                    // Open the modal for editing
+                    $('#editModal').modal('show');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Handle error case
+                    console.error('Error fetching resident data:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        // Function to populate form fields with resident data
+        function populateFormWithData(residentData) {
+            // Assuming you have form fields with corresponding IDs, update their values
+            $('#first_name').val(residentData.first_name);
+            $('#middle_name').val(residentData.middle_name);
+            $('#last_name').val(residentData.last_name);
+            // Repeat this for other form fields
+        }
+
+        // Attach a submit event handler to the form
+        $(document).on("submit", "form", function (event) {
+// Prevent the default form submission
+event.preventDefault();
+
+// Display a confirmation dialog
+var isConfirmed = confirm("Are you sure you want to edit this resident?");
+
+// Check if the user confirmed the action
+if (isConfirmed) {
+    // Get the resident ID from the form or any other source you have
+    var residentId = getResidentId(); // Implement the function to get the resident ID
+
+    console.log('Resident ID:', residentId); // Log the residentId before making the request
+
+    // Call the function to update resident data by ID
+    updateResident(residentId);
+}
+});
+
+        // Function to update resident data by ID
+        function updateResident(residentId) {
+            var residentData = getFormData();
+            console.log('Sending data to server:', residentData);
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/residentprofiles/" + residentId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(residentData),
+                dataType: 'json',
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+                success: function (data) {
+                    console.log("Resident updated successfully");
+                    // You might want to close the modal or perform other actions upon success
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error('Error updating resident data:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        // Function to gather form data into an object
+        function getFormData() {
+            // Create an object to store form data
+            var residentData = {
+                first_name: $('#first_name').val(),
+                middle_name: $('#middle_name').val(),
+                last_name: $('#last_name').val(),
+                // Add other form fields here
+            };
+
+            // Return the object
+            return residentData;
+        }
+
+        // Function to get the resident ID (you need to implement this based on your application logic)
+        function getResidentId() {
+            // Implement the logic to retrieve the resident ID
+            // For example, if you have stored the resident ID in a data attribute of the form:
+            return $('#editModal').data('resident-id');
+        }
+    });
+
+// VIEW MODAL----------------------------------------------------------------------------------
+// Attach a click event handler to the view button
+$(document).on("click", ".view-btn", function () {
+    var residentId = $(this).data("residentid");
+
+    // Call the function to get specific resident data by ID
+    getResidentForView(residentId);
+});
+
+// Function to get specific resident data by ID for the view modal
+function getResidentForView(residentId) {
+    console.log('Getting resident with ID for view:', residentId);
+    $.ajax({
+        url: "http://127.0.0.1:8000/residentprofiles/" + residentId,
+        type: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem('token')
+        },
+        success: function (data) {
+            // Populate the "Name" text in the view modal with resident data
+            updateViewModalName(data.data);
+            // Open the view modal
+            $('#viewModal').modal('show');
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            // Handle error case
+            console.error('Error fetching resident data for view:', textStatus, errorThrown);
+        }
+    });
+}
+
+// Function to update "Name" text in the view modal
+function updateViewModalName(residentData) {
+    // Assuming you have an element with an ID for "Name" text in the view modal
+    $('#viewModalName').text(residentData.first_name + ' ' + residentData.middle_name + ' ' + residentData.last_name);
+    // You might want to add additional information here if needed
+}
+
+
+//SECURITY--------------
+   // Check for the token when the page loads
+   document.addEventListener("DOMContentLoaded", function() {
+         var token = localStorage.getItem('token');
+         if (token) {
+             // Show the services content if the token is present
+             document.getElementById('whole-content').style.display = 'block';
+         } else {
+             // Redirect to login if token is not present
+             window.location.href = "/login";  // Adjust the login page URL if necessary
+         }
+     });
+
+</script>
+{% endblock %}
+
+    
+
